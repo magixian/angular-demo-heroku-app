@@ -27,8 +27,7 @@ jobs:
           command: echo ${CIRCLE_BRANCH}
       - run: mkdir -p tmp
       - run: ls
-      - run: cd ..
-      - run: ls
+      - run: ls ..
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
           root: ./tmp

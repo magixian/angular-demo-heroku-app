@@ -25,7 +25,7 @@ jobs:
       - run:
           name: Show current branch
           command: echo ${CIRCLE_BRANCH}
-      - run: mkdir -p /tmp
+      - run: mkdir -p tmp
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
           root: /tmp

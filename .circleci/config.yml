@@ -5,7 +5,7 @@ workflows:
   heroku_deploy:
     jobs:
       - build-dependencies
-      - tests
+      - tests:
           requires:
               - build-dependencies
       - deploy:

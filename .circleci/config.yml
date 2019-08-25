@@ -5,13 +5,19 @@ workflows:
   heroku_deploy:
     jobs:
       - build-dependencies
+      - tests:
+          requires:
+              - build-dependencies
       - deploy:
           requires:
               - build-dependencies
+              - tests
 jobs:
   # The build dependencies job
   build-dependencies:
     working_directory: ~/angular-demo-heroku-app
+    docker:
+      - image: circleci/node:10
     steps:
       # Checkout the code from the branch into the working_directory
       - checkout
@@ -33,6 +39,30 @@ jobs:
           key: v1-dependencies-{{ checksum "package-lock.json" }}
           paths:
               - node_modules
+  # The test job
+  tests:
+    working_directory: ~/angular-demo-heroku-app
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      # Checkout the code from the branch into the working_directory
+      - checkout
+      # Log the current branch
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
+      # Lint the source code
+      - run:
+          name: Linting
+          command: npm run lint
+      # Test the source code
+      - run:
+          name: Testing
+          command: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      # End to End test
+      - run:
+          name: End to End Test
+          command: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
   deploy:
     executor: heroku/default # Uses the basic buildpack-deps image, which has the prerequisites for installing heroku's CLI.
     steps:

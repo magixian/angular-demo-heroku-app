@@ -6,8 +6,8 @@ workflows:
     jobs:
       - tests
       - deploy:
-            requires:
-            - tests
+          requires:
+              - tests
 jobs:
   # The test job
   tests:
@@ -17,6 +17,10 @@ jobs:
     steps:
       # Checkout the code from the branch into the working_directory
       - checkout
+      # Log the current branch
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
   deploy:
     executor: heroku/default # Uses the basic buildpack-deps image, which has the prerequisites for installing heroku's CLI.
     steps:

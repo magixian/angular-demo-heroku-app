@@ -28,7 +28,7 @@ jobs:
       - run: mkdir -p ~/tmp
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
-          root: /tmp/workspaces
+          root: /tmp
           paths:
             - node_modules
       # Restore local dependencies from cache
@@ -55,7 +55,7 @@ jobs:
       - checkout
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
-          at: /tmp/workspaces
+          at: /tmp
       # Log the current branch
       - run:
           name: Show current branch

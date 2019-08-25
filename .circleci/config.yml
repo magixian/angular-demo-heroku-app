@@ -20,7 +20,6 @@ jobs:
       - run:
         name: Show current branch
         command: echo ${CIRCLE_BRANCH}
-
   deploy:
     executor: heroku/default # Uses the basic buildpack-deps image, which has the prerequisites for installing heroku's CLI.
     steps:

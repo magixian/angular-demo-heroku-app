@@ -27,7 +27,7 @@ jobs:
           command: echo ${CIRCLE_BRANCH}
       - persist_to_workspace:
           # Must be an absolute path, or relative path from working_directory
-          root: my_workspace
+          root: /tmp/dependencies
           paths:
             - angular-demo-heroku-app
       # Restore local dependencies from cache
@@ -54,7 +54,7 @@ jobs:
       - checkout
       - attach_workspace:
           # Must be absolute path or relative path from working_directory
-          at: my_workspace
+          at: /tmp/dependencies
       # Log the current branch
       - run:
           name: Show current branch

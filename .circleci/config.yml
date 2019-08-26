@@ -4,14 +4,21 @@ orbs:
 workflows:
   heroku_deploy:
     jobs:
-      - tests
-      - install:
-          requires:
-              - tests
-      - deploy:
+      - install
+      - linting-tests:
           requires:
               - install
-              - tests
+      - unit-tests:
+          requires:
+              - install
+      - e2e-tests:
+          requires:
+              - install
+      - deploy:
+          requires:
+              - linting-tests
+              - unit-tests
+              - e2e-tests
 jobs:
   # The install job
   install:
@@ -64,6 +71,69 @@ jobs:
       - run:
           name: Testing
           command: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+      # End to End test
+      - run:
+          name: End to End Test
+          command: npm run e2e -- --protractor-config=e2e/protractor-ci.conf.js
+  # The  lintingtest job
+  linting-tests:
+    working_directory: ~/angular-demo-heroku-app
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      # Checkout the code from the branch into the working_directory
+      - checkout
+      # Log the current branch
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
+      # Restore local dependencies from cache
+      - restore_cache:
+          keys:
+              - v1-dependencies-{{ checksum "package-lock.json" }}
+              - v1-dependencies-
+      # Lint the source code
+      - run:
+          name: Linting
+          command: npm run lint
+  # The unit test job
+  unit-tests:
+    working_directory: ~/angular-demo-heroku-app
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      # Checkout the code from the branch into the working_directory
+      - checkout
+      # Log the current branch
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
+      # Restore local dependencies from cache
+      - restore_cache:
+          keys:
+              - v1-dependencies-{{ checksum "package-lock.json" }}
+              - v1-dependencies-
+      # Test the source code
+      - run:
+          name: Testing
+          command: npm run test -- --no-watch --no-progress --browsers=ChromeHeadlessCI
+  # The e2e test job
+  e2e-tests:
+    working_directory: ~/angular-demo-heroku-app
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      # Checkout the code from the branch into the working_directory
+      - checkout
+      # Log the current branch
+      - run:
+          name: Show current branch
+          command: echo ${CIRCLE_BRANCH}
+      # Restore local dependencies from cache
+      - restore_cache:
+          keys:
+              - v1-dependencies-{{ checksum "package-lock.json" }}
+              - v1-dependencies-
       # End to End test
       - run:
           name: End to End Test

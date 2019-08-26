@@ -4,16 +4,19 @@ orbs:
 workflows:
   heroku_deploy:
     jobs:
-      - tests
+      - install
+      - tests:
+          requires:
+              - install
       - deploy:
           requires:
               - tests
 jobs:
-  # The test job
-  tests:
+  # The install job
+  install:
     working_directory: ~/angular-demo-heroku-app
     docker:
-      - image: circleci/node:10-browsers
+      - image: circleci/node:10
     steps:
       # Checkout the code from the branch into the working_directory
       - checkout
@@ -35,6 +38,17 @@ jobs:
           key: v1-dependencies-{{ checksum "package-lock.json" }}
           paths:
               - node_modules
+  # The test job
+  tests:
+    working_directory: ~/angular-demo-heroku-app
+    docker:
+      - image: circleci/node:10-browsers
+    steps:
+      # Restore local dependencies from cache
+      - restore_cache:
+          keys:
+              - v1-dependencies-{{ checksum "package-lock.json" }}
+              - v1-dependencies-
       # Lint the source code
       - run:
           name: Linting
